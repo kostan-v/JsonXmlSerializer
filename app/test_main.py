@@ -53,7 +53,7 @@ def test_json2xml_example():
 
 
 def test_xml2json_exceptions():
-    response = client.post("/xml2json", data="<ITEM type="object">")
+    response = client.post("/xml2json", data="<ITEM type=\"object\">")
     assert response.status_code == 400
     assert response.json() == {"detail": "Data in body is not valid XML file"}
 
