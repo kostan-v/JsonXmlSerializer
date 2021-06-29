@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>XML <-> JSON converter</title>
+    <meta name="description" content="A simple utility to convert between JSON and XML-encoded JSON">
+    <meta name="author" content="kostan-v">
+
+    <meta property="og:title" content="XML <-> JSON converter">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="A simple utility to convert between JSON and XML-encoded JSON">
+
+    <style>
+        textarea {
+          width: 100%;
+          min-height: 200px;
+          box-sizing: border-box;
+        }
+    </style>  
+
+</head>
+
+<body>
+    <form id="formXml2Json">
+        <label for="xml_input">XML data:</label><br>
+        <textarea id="xml_input" name="xml_input" placeholder="<ITEM type=&quot;object&quot;><ITEM key=&quot;apple&quot; type=&quot;integer&quot; value=&quot;7&quot;/></ITEM>"></textarea><br>
+        <input type="submit" value="To JSON">
+    </form>
+    <p id="formXml2JsonError"></p>
+    <br>
+    <form id="formJson2Xml">
+        <label for="json_input">JSON data:</label><br>
+        <textarea id="json_input" name="json_input" placeholder="{ &quot;apple&quot;: 7 }"></textarea><br>
+        <input type="submit" value="To XML">        
+    </form>
+    <p id="formJson2XmlError"></p>
+
+    <script>
+        function postText(url, inputId, targetSuccId, targetErrId, contentType) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+
+                if (this.status == 200) {
+                    console.log(this.responseText)
+                    document.getElementById(targetSuccId).value = this.responseText
+                }
+                else if (this.status >= 400 && this.status < 500) {
+                    const resp = JSON.parse(this.responseText)
+
+                    document.getElementById(targetErrId).innerHTML = resp.detail
+                }
+            };
+
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader("Content-Type", contentType)
+            const data = document.getElementById(inputId).value
+            console.log(data)
+            document.getElementById(targetErrId).innerHTML = ""
+            xhr.send(data);
+        }
+
+        function convertXml2Json() {
+            postText("xml2json", "xml_input", "json_input", "formXml2JsonError", "application/xml")
+        }
+        function convertJson2Xml() {
+            postText("json2xml", "json_input", "xml_input", "formJson2XmlError", "application/json")
+        }
+
+        const formXml2Json = document.getElementById("formXml2Json");
+
+        formXml2Json.addEventListener( "submit", function ( event ) {
+            event.preventDefault();
+
+            convertXml2Json();
+        } );
+
+        const formJson2Xml = document.getElementById("formJson2Xml");
+
+        formJson2Xml.addEventListener( "submit", function ( event ) {
+            event.preventDefault();
+
+            convertJson2Xml();
+        } );
+
+        $('textarea').autoResize();
+    </script>
+</body>
+</html>
