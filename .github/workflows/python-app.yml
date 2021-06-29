@@ -37,4 +37,4 @@ jobs:
         pytest
     - name: Analysing the code with pylint
       run: |
-        pylint `find app|grep .py$|xargs`
+        pylint --fail-under=8 `find app|grep .py$|xargs`
